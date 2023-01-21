@@ -55,6 +55,47 @@ const userController = {
       return res.status(500).json({ error: "Internal Server Error" });
     }
   },
+  async update(req, res) {
+    const { id } = req.params;
+    if (isNaN(+id)) {
+      return res.status(400).json({ error: "Invalid data" });
+    }
+    const { password } = req.body;
+    if (!password) {
+      return res.status(400).json({ error: "password are required" });
+    }
+    try {
+      const user = await User.findOne({ where: { id: id } });
+      if (!user) {
+        return res.status(404).json({ error: "not found" });
+      }
+      User.update(
+        {
+          password: Helpers.hashGenerator(password),
+        },
+        { where: { id: id } }
+      );
+      res.json({ msg: "successfully updated password" });
+    } catch (error) {
+      return res.status(500).json({ error: "Internal Server Error" });
+    }
+  },
+  async delete(req, res) {
+    const { id } = req.params;
+    if (isNaN(+id)) {
+      return res.status(400).json({ error: "Invalid data" });
+    }
+    try {
+      const user = await User.findOne({ where: { id: id } });
+      if (!user) {
+        return res.status(404).json({ error: "not found" });
+      }
+      const userDelete = await User.destroy({ where: { id: id } });
+      res.json({ msg: "successfully deleted user" });
+    } catch (error) {
+      return res.status(500).json({ error: "Internal Server Error" });
+    }
+  },
 };
 
 module.exports = userController;
