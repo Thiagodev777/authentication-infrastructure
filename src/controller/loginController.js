@@ -11,13 +11,25 @@ const loginController = {
     try {
       const user = await User.findOne({ where: { email: email } });
       if (!user) {
-        return res.status(400).json({ error: "email not found" });
+        return res.status(404).json({ error: "email not found" });
       }
       const passwordIsCorrect = Helpers.checkPassword(password, user.password);
       if (!passwordIsCorrect) {
         return res.status(401).json({ error: "incorrect password" });
       }
-      return res.json({ msg: "Acesso autorizado" });
+      jwt.sign(
+        { id: user.id, email: user.email },
+        process.env.JWT_SECRET,
+        {
+          expiresIn: "240",
+        },
+        (err, token) => {
+          if (err) {
+            return res.status(500).json({ error: "Internal Server Error" });
+          }
+          return res.json({ token: token });
+        }
+      );
     } catch (error) {
       return res.status(500).json({ error: "Internal Server Error" });
     }
