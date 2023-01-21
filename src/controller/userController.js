@@ -35,7 +35,7 @@ const userController = {
   },
   async create(req, res) {
     const { email, password } = req.body;
-    if (!email && !password) {
+    if (!email || !password) {
       return res.status(400).json({ error: "email and password are required" });
     }
     if (!validator.isEmail(email)) {
