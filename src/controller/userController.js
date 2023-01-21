@@ -1,4 +1,6 @@
 const User = require("../model/User");
+const validator = require("validator");
+const Helpers = require("../helpers/Helpers");
 
 const userController = {
   async findAll(req, res) {
@@ -27,6 +29,28 @@ const userController = {
         return res.status(404).json({ error: "not found" });
       }
       return res.json(user);
+    } catch (error) {
+      return res.status(500).json({ error: "Internal Server Error" });
+    }
+  },
+  async create(req, res) {
+    const { email, password } = req.body;
+    if (!email && !password) {
+      return res.status(400).json({ error: "email and password are required" });
+    }
+    if (!validator.isEmail(email)) {
+      return res.status(400).json({ error: "invalid email" });
+    }
+    try {
+      const isDuplicateEmail = await User.findOne({ where: { email: email } });
+      if (isDuplicateEmail) {
+        return res.status(400).json({ error: "the email already exists" });
+      }
+      const userCreate = await User.create({
+        email,
+        password: Helpers.hashGenerator(password),
+      });
+      res.json({ msg: "successfully registered user" });
     } catch (error) {
       return res.status(500).json({ error: "Internal Server Error" });
     }

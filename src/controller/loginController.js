@@ -1,3 +1,5 @@
+const jwt = require("jsonwebtoken");
+
 const loginController = {
   async auth(req, res) {
     const { email, password } = req.body;
