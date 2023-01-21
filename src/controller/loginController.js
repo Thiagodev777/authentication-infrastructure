@@ -21,7 +21,7 @@ const loginController = {
         { id: user.id, email: user.email },
         process.env.JWT_SECRET,
         {
-          expiresIn: "240",
+          expiresIn: "2h",
         },
         (err, token) => {
           if (err) {

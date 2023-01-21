@@ -9,7 +9,7 @@ const userController = {
         order: [["id", "DESC"]],
         attributes: { exclude: ["password"] },
       });
-      return res.json(users);
+      return res.json({ loggedUser: req.loggedUser, users });
     } catch (error) {
       return res.status(500).json({ error: "Internal Server Error" });
     }
